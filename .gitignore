@@ -1,0 +1,15 @@
+# macOS
+.DS_Store
+
+# Xcode
+xcuserdata/
+*.xcworkspace
+DerivedData/
+*.swp
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+*.pbxuser
+*.pyc
+__pycache__/
+
