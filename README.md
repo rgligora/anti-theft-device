@@ -1,4 +1,4 @@
-# Antitheft Device
+# Anti-theft IoT System
 
 > An IoT project combining an ESP32‑C6 motion‑sensing node, an open‑source ThingsBoard instance, and a SwiftUI iOS client.  
 > It showcases how to build a low‑cost **antitheft tracker** with a live digital twin, real‑time alerts and remote arm/disarm control.
