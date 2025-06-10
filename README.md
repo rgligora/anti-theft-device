@@ -93,10 +93,12 @@ The iOS app polls the twin and notifies the user in real time.
 
 ## Mobile App (iOS)
 
-* **Swift 5.9 / SwiftUI / Combine**  
-* `ThingsBoardAPI.swift` – tiny wrapper around TB REST & RPC endpoints  
-* `DeviceViewModel.swift` – `@Observable` state with 1 s polling loop  
-* Map rendered with **MapKit**; haptic feedback and local push on alert.
+* **Swift 5.9 / SwiftUI / Combine**
+* `ThingsBoardAPI.swift` – lightweight wrapper around ThingsBoard REST & RPC APIs
+* `DeviceViewModel.swift` – maintains observable state and polls every 1 second
+* **MapKit** – shows live location of the device
+* **Local Notification Support** – when `motion_detected` becomes true, the app sends a system notification (iOS permission required)
+* Includes haptic feedback, blinking indicators, and real-time status updates.
 
 Build & run:
 
