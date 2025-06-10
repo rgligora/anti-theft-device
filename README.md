@@ -157,7 +157,7 @@ Target: iOS 17+, Apple Silicon or simulator.
 | ![Dashboard](docs/tb_dashboard.png) |
 
 | Splash screen | Disarmed | Armed | Moving |
-|-----------|------------|
+|-----------|------------|-----------|------------|
 | ![App](docs/app_splash_screen.png) | ![App](docs/app_disarmed.png) | ![App](docs/app_armed.png) | ![App](docs/app_moving.png) |
 
 ---
