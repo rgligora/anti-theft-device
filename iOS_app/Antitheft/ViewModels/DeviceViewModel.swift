@@ -16,6 +16,7 @@ class DeviceViewModel: ObservableObject {
     @Published var coordinate: CLLocationCoordinate2D = CLLocationCoordinate2D(latitude: 45.8080, longitude: 15.9719)
     @Published var isArmed: Bool = false
     @Published var isMoving: Bool = false
+    private var wasMoving: Bool = false  // Track previous state
 
     private var timerCancellable: AnyCancellable?
 
@@ -38,6 +39,12 @@ class DeviceViewModel: ObservableObject {
                 self.coordinate = loc
                 self.isArmed = armedState
                 self.isMoving = moving
+                
+                // Check if device just started moving
+                if moving && !self.wasMoving {
+                    NotificationService.shared.scheduleMovementNotification()
+                }
+                self.wasMoving = moving
             }
         } catch {
             print("[ViewModel] Fetch error: \(error)")

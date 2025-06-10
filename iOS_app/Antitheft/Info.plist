@@ -26,5 +26,11 @@
 			</array>
 		</dict>
 	</dict>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>remote-notification</string>
+	</array>
+	<key>NSUserNotificationUsageDescription</key>
+	<string>We need to send you notifications when your device starts moving to alert you of potential theft.</string>
 </dict>
 </plist>

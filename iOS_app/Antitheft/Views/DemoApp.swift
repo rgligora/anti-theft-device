@@ -19,6 +19,11 @@ extension CLLocationCoordinate2D: @retroactive Equatable {
 
 @main
 struct DemoApp: App {
+    init() {
+        // Initialize notification service
+        _ = NotificationService.shared
+    }
+    
     var body: some Scene {
         WindowGroup {
             ContentView(viewModel: DeviceViewModel())
