@@ -33,21 +33,29 @@ The iOS app polls the twin and notifies the user in real time.
 ---
 
 ## System Architecture
-
-```mermaid
-graph TD
-    subgraph Edge
-        ESP32[ESP32‑C6 DevKit] -->|MQTT v3.1.1<br>QoS 0| TB(ThingsBoard CE)
-    end
-    subgraph Cloud
-        TB -->|REST API (JWT)| App(SwiftUI App)
-        TB --> DB[(PostgreSQL<br>+ TimescaleDB)]
-        TB --> RuleEngine
-    end
-    RuleEngine -->|E‑mail / Webhook| Notifications
-```
-
-*Single source of truth ⇒ ThingsBoard* – neither the MCU nor the app talk directly to each other.
+                 +--------------------------+       +--------------------------+
+                 |     ESP32‑C6 DevKit      |       |      Digital Twin        |
+                 |     (Physical Device)    |       |   (Simulated Device)     |
+                 +-----------+--------------+       +-----------+--------------+
+                             |                                  |
+                             |  MQTT v3.1.1                     |
+                             +---------------+------------------+
+                                             |
+                                             ▼
+                                  +-----------------------+
+                                  |    ThingsBoard CE     |
+                                  |  (Device Registry,    |
+                                  |   Telemetry Broker)   |
+                                  +-----------+-----------+
+                                              |
+                          REST API (JWT)      |     
+                              +--------------+--------------+
+                              |                             |
+                              ▼                             ▼
+              +--------------------------+     +--------------------------+
+              |   SwiftUI iOS App        |     |   Additional Clients     |
+              |  (Track + Arm/Disarm)    |     |  (optional dashboards)   |
+              +--------------------------+     +--------------------------+
 
 ---
 
@@ -150,7 +158,7 @@ Target: iOS 17+, Apple Silicon or simulator.
 
 | Splash screen | Disarmed | Armed | Moving |
 |-----------|------------|
-| ![App](docs/app_splash_screen.png.png) | ![App](docs/app_disarmed.png.png) | ![App](docs/app_armed.png.png) | ![App](docs/app_moving.png.png) |
+| ![App](docs/app_splash_screen.png) | ![App](docs/app_disarmed.png) | ![App](docs/app_armed.png) | ![App](docs/app_moving.png) |
 
 ---
 
