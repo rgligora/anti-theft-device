@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="styles/login.css">
+</head>
+<body>
+    <div class="login-box">
+        <h1>IoT Dashboard Login</h1>
+        <form method="POST" action="/login" id="login-form">
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <button type="submit" id="login-btn">Login</button>
+        </form>
+        <div id="loading" class="loading hidden">
+            <p>Authenticating with ThingsBoard...</p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('login-form').addEventListener('submit', function() {
+            document.getElementById('login-btn').disabled = true;
+            document.getElementById('login-btn').textContent = 'Logging in...';
+            document.getElementById('loading').classList.remove('hidden');
+        });
+    </script>
+</body>
+</html>

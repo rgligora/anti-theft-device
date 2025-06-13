@@ -1,0 +1,259 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+/* Navbar Styles */
+.navbar {
+    background: #fff;
+    padding: 1rem 2rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.navbar h1 {
+    margin: 0;
+    color: #333;
+    font-size: 1.5rem;
+}
+
+.navbar-logout {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    background-color: #dc3545;
+    color: white;
+}
+
+.navbar-logout:hover {
+    background-color: #c82333;
+}
+
+/* Main Dashboard Container */
+.dashboard-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: calc(100vh - 80px);
+    padding: 20px;
+}
+
+.dashboard-box {
+    background: #fff;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 800px;
+    text-align: center;
+}
+
+.dashboard-box h2 {
+    margin-bottom: 1rem;
+    color: #333;
+}
+
+.dashboard-box p {
+    font-size: 1.1rem;
+    margin: 0.5rem 0;
+    color: #666;
+}
+
+/* Button Styles - All consistent */
+.btn {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    background-color: #007bff;
+    color: white;
+    margin: 0.25rem;
+}
+
+.btn:hover {
+    background-color: #0056b3;
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Alarm Controls Section */
+.alarm-controls {
+    margin: 1.5rem 0;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+}
+
+.alarm-controls h3 {
+    margin-top: 0;
+    color: #333;
+}
+
+.alarm-status {
+    margin: 1rem 0;
+}
+
+.alarm-status p {
+    font-size: 1.2rem;
+    margin: 0.5rem 0;
+}
+
+.status-armed { 
+    color: #dc3545; 
+    font-weight: bold; 
+}
+
+.status-disarmed { 
+    color: #28a745; 
+    font-weight: bold; 
+}
+
+.status-triggered { 
+    color: #ff0000; 
+    font-weight: bold; 
+    animation: blink 1s infinite; 
+}
+
+@keyframes blink { 
+    0%, 50% { opacity: 1; } 
+    51%, 100% { opacity: 0.3; } 
+}
+
+/* Controls Section */
+.controls {
+    margin-top: 1.5rem;
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* Map Container */
+.map-container {
+    margin: 20px 0;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.map-header {
+    background: #f5f5f5;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    font-weight: bold;
+}
+
+#device-map {
+    height: 300px;
+    width: 100%;
+}
+
+.location-info {
+    padding: 10px;
+    background: #f9f9f9;
+    font-size: 12px;
+    color: #666;
+}
+
+/* Telemetry History Table Styles */
+.telemetry-history {
+    margin: 20px 0;
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #ddd;
+}
+
+.telemetry-history h3 {
+    margin: 0;
+    padding: 15px;
+    background: #f5f5f5;
+    border-bottom: 1px solid #ddd;
+    color: #333;
+}
+
+.telemetry-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+.telemetry-table th,
+.telemetry-table td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+.telemetry-table th {
+    background: #f8f9fa;
+    font-weight: bold;
+    color: #555;
+}
+
+.telemetry-table tr:hover {
+    background: #f8f9fa;
+}
+
+.telemetry-table .status-yes {
+    color: #dc3545;
+    font-weight: bold;
+}
+
+.telemetry-table .status-no {
+    color: #28a745;
+}
+
+.telemetry-table .timestamp {
+    font-size: 0.8rem;
+    color: #666;
+}
+
+.no-data {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+    font-style: italic;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+    .navbar {
+        padding: 1rem;
+    }
+    
+    .navbar h1 {
+        font-size: 1.2rem;
+    }
+    
+    .dashboard-box {
+        padding: 1rem;
+        margin: 10px;
+    }
+    
+    .controls {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .btn {
+        width: 100%;
+        max-width: 200px;
+    }
+}

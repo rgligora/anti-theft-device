@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+    <link rel="stylesheet" href="/styles/dashboard.css"/>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <h1>ANTITHEFT</h1>
+        <h2 id="welcome">Loading...</h2>
+        <button id="logout-btn" class="navbar-logout">Logout</button>
+    </nav>
+
+    <!-- Main Dashboard Container -->
+    <div class="dashboard-container">
+        <div class="dashboard-box">
+            <div class="alarm-controls">
+                <h3>Alarm Control</h3>
+                <div class="alarm-status">
+                    <p>Status: <span id="alarm-status">Disarmed</span></p>
+                </div>
+                <div class="alarm-buttons">
+                    <button id="toggle-alarm-btn" class="btn">Arm</button>
+                </div>
+            </div>
+            
+            <div class="telemetry-history">
+                <h3>Telemetry History (Last 5 Readings)</h3>
+                <div id="telemetry-table-container">
+                    <div class="no-data">Loading telemetry history...</div>
+                </div>
+            </div>
+            
+            <div class="map-container">
+                <div class="map-header">Device Location</div>
+                <div id="device-map"></div>
+                <div class="location-info" id="location-info">Location data will appear here when available</div>
+            </div>
+            
+            <div class="controls">
+                <button id="refresh-btn" class="btn">Refresh Data</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+    <script>
+        let userId = null;
+        let refreshInterval = null;
+        let map = null;
+        let marker = null;
+        let currentAlarmState = false;
+        let telemetryHistory = [];
+
+        // Initialize map
+        function initMap() {
+            map = L.map('device-map').setView([45.815376, 15.983528], 13);
+            
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+        }
+
+        // Update map with device location
+        function updateMapLocation(deviceData) {
+            if (!map) return;
+
+            try {
+                const lat = deviceData.latitude && deviceData.latitude[0] ? parseFloat(deviceData.latitude[0].value) : null;
+                const lng = deviceData.longitude && deviceData.longitude[0] ? parseFloat(deviceData.longitude[0].value) : null;
+
+                if (lat && lng) {
+                    // Remove existing marker
+                    if (marker) {
+                        map.removeLayer(marker);
+                    }
+
+                    // Add new marker
+                    marker = L.marker([lat, lng]).addTo(map);
+                    
+                    // Center map on the location
+                    map.setView([lat, lng], 15);
+
+                    // Update location info
+                    const timestamp = deviceData.latitude[0].ts;
+                    const lastUpdate = new Date(timestamp).toLocaleString();
+                    document.getElementById('location-info').innerHTML = 
+                        `Latitude: ${lat}, Longitude: ${lng}<br>Last updated: ${lastUpdate}`;
+                } else {
+                    document.getElementById('location-info').textContent = 'No location data available';
+                }
+            } catch (error) {
+                console.log('Could not parse location data:', error);
+                document.getElementById('location-info').textContent = 'Error parsing location data';
+            }
+        }
+
+        // Update telemetry history table
+        function updateTelemetryHistory(deviceData) {
+            try {
+                const lat = deviceData.latitude && deviceData.latitude[0] ? parseFloat(deviceData.latitude[0].value) : null;
+                const lng = deviceData.longitude && deviceData.longitude[0] ? parseFloat(deviceData.longitude[0].value) : null;
+                
+                let isArmed = false;
+                if (deviceData['armed'] && deviceData['armed'][0]) {
+                    const value = deviceData['armed'][0].value;
+                    isArmed = value === true || value === 'true' || value === 1 || value === '1' || value === 'armed';
+                }
+                
+                let motionDetected = false;
+                if (deviceData['motion_detected'] && deviceData['motion_detected'][0]) {
+                    const value = deviceData['motion_detected'][0].value;
+                    motionDetected = value === true || value === 'true' || value === 1 || value === '1';
+                }
+                
+                let timestamp = Date.now();
+                if (deviceData.disarmDevice_timestamp && deviceData.disarmDevice_timestamp[0]) {
+                    timestamp = deviceData.disarmDevice_timestamp[0].ts;
+                } else if (deviceData.armDevice_timestamp && deviceData.armDevice_timestamp[0]) {
+                    timestamp = deviceData.armDevice_timestamp[0].ts;
+                }
+
+                const entry = {
+                    timestamp: timestamp,
+                    latitude: lat,
+                    longitude: lng,
+                    armed: isArmed,
+                    motionDetected: motionDetected
+                };
+
+            
+                telemetryHistory.unshift(entry);
+                
+                // Keep only last 5 entries
+                if (telemetryHistory.length > 5)
+                    telemetryHistory = telemetryHistory.slice(0, 5);
+
+                renderTelemetryTable();
+
+            } catch (error) {
+                console.error('Error updating telemetry history:', error);
+            }
+        }
+
+        // Render the telemetry history table
+        function renderTelemetryTable() {
+            const container = document.getElementById('telemetry-table-container');
+            
+            if (telemetryHistory.length === 0) {
+                container.innerHTML = '<div class="no-data">No telemetry data available</div>';
+                return;
+            }
+
+            let tableHTML = `
+                <table class="telemetry-table">
+                    <thead>
+                        <tr>
+                            <th>Timestamp</th>
+                            <th>Latitude</th>
+                            <th>Longitude</th>
+                            <th>Armed</th>
+                            <th>Motion</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            telemetryHistory.forEach(entry => {
+                const date = new Date(entry.timestamp).toLocaleString();
+                const lat = entry.latitude !== null ? entry.latitude.toFixed(6) : 'N/A';
+                const lng = entry.longitude !== null ? entry.longitude.toFixed(6) : 'N/A';
+                const armed = entry.armed ? '<span class="status-yes">Yes</span>' : '<span class="status-no">No</span>';
+                const motion = entry.motionDetected ? '<span class="status-yes">Yes</span>' : '<span class="status-no">No</span>';
+
+                tableHTML += `
+                    <tr>
+                        <td class="timestamp">${date}</td>
+                        <td>${lat}</td>
+                        <td>${lng}</td>
+                        <td>${armed}</td>
+                        <td>${motion}</td>
+                    </tr>
+                `;
+            });
+
+            tableHTML += `
+                    </tbody>
+                </table>
+            `;
+
+            container.innerHTML = tableHTML;
+        }
+
+        // Get user ID from URL
+        function getUserIdFromUrl() {
+            const path = window.location.pathname;
+            const match = path.match(/\/user\/(\d+)/);
+            return match ? parseInt(match[1]) : null;
+        }
+
+        // Get user info and update welcome message
+        async function loadUserInfo() {
+            userId = getUserIdFromUrl();
+            if (!userId) {
+                window.location.href = '/';
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/user/${userId}/info`);
+                const userInfo = await response.json();
+                
+                if (response.ok) {
+                    document.getElementById('welcome').textContent = `Welcome, ${userInfo.username}!`;
+                } else {
+                    throw new Error('Failed to load user info');
+                }
+            } catch (error) {
+                console.error('Error loading user info:', error);
+                document.getElementById('welcome').textContent = 'Welcome!';
+            }
+        }
+
+        // Fetch device data from ThingsBoard
+        async function fetchDeviceData() {
+            if (!userId) return;
+
+            try {
+                let response = await fetch(`/api/user/${userId}/device-data`);
+                
+                if (!response.ok) {
+                    console.log('JWT endpoint failed, trying simple endpoint...');
+                    response = await fetch(`/api/user/${userId}/device-data-simple`);
+                }
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    updateAlarmStatus(data);
+                    
+                    updateMapLocation(data);
+                    
+                    updateTelemetryHistory(data);
+                } else {
+                    throw new Error(data.error || 'Failed to fetch data');
+                }
+            } catch (error) {
+                console.error('Error fetching device data:', error);
+            }
+        }
+
+        // Update alarm status and button based on received data
+        function updateAlarmStatus(deviceData) {
+            const statusElement = document.getElementById('alarm-status');
+            const toggleBtn = document.getElementById('toggle-alarm-btn');
+            
+            let isArmed = false;
+            let isTriggered = false;
+            
+            if (deviceData['armed'] && deviceData['armed'][0]) {
+                const value = deviceData['armed'][0].value;
+                if (value === true || value === 'true' || value === 1 || value === '1' || value === 'armed') {
+                    isArmed = true;
+                }
+            }
+        
+            
+            if (deviceData['motion_detected'] && deviceData['motion_detected'][0]) {
+                const value = deviceData['motion_detected'][0].value;
+                if (value === true || value === 'true' || value === 1 || value === '1') {
+                    isTriggered = true;
+                }
+            }
+            
+            currentAlarmState = isArmed;
+            
+            if (isTriggered && isArmed) {
+                statusElement.textContent = 'TRIGGERED!';
+                statusElement.className = 'status-triggered';
+                toggleBtn.textContent = 'Disarm';
+                toggleBtn.disabled = false;
+            } else if (isArmed) {
+                statusElement.textContent = 'Armed';
+                statusElement.className = 'status-armed';
+                toggleBtn.textContent = 'Disarm';
+                toggleBtn.disabled = false;
+            } else {
+                statusElement.textContent = 'Disarmed';
+                statusElement.className = 'status-disarmed';
+                toggleBtn.textContent = 'Arm';
+                toggleBtn.disabled = false;
+            }
+            
+            console.log(`Alarm state updated - Armed: ${isArmed}, Triggered: ${isTriggered}`);
+        }
+
+        // Send command to ThingsBoard device
+        async function sendDeviceCommand(command, params = {}) {
+            if (!userId) return;
+
+            try {
+                const response = await fetch(`/api/user/${userId}/send-command`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        command: command,
+                        params: params
+                    })
+                });
+
+                const result = await response.json();
+                
+                if (response.ok) {
+                    console.log('Command sent successfully:', result);
+                    setTimeout(fetchDeviceData, 2000);
+                    return true;
+                } else {
+                    throw new Error(result.error || 'Failed to send command');
+                }
+            } catch (error) {
+                console.error('Error sending device command:', error);
+                alert(`Error: ${error.message}`);
+                return false;
+            }
+        }
+
+        // Toggle alarm state (arm/disarm)
+        async function toggleAlarm() {
+            const toggleBtn = document.getElementById('toggle-alarm-btn');
+            const originalText = toggleBtn.textContent;
+            
+            toggleBtn.disabled = true;
+            toggleBtn.textContent = currentAlarmState ? 'Disarming...' : 'Arming...';
+            
+            try {
+                let success = false;
+                
+                if (currentAlarmState) {
+                    success = await sendDeviceCommand('disarmDevice', { 
+                        armed: false, 
+                    });
+                } else {
+                    success = await sendDeviceCommand('armDevice', { 
+                        armed: true, 
+                    });
+                }
+                
+                if (success) {
+                    currentAlarmState = !currentAlarmState;
+                    const statusElement = document.getElementById('alarm-status');
+                    
+                    if (currentAlarmState) {
+                        statusElement.textContent = 'Armed';
+                        statusElement.className = 'status-armed';
+                        toggleBtn.textContent = 'Disarm';
+                    } else {
+                        statusElement.textContent = 'Disarmed';
+                        statusElement.className = 'status-disarmed';
+                        toggleBtn.textContent = 'Arm';
+                    }
+                }
+                
+            } catch (error) {
+                console.error('Error toggling alarm:', error);
+            } finally {
+                toggleBtn.disabled = false;
+                if (toggleBtn.textContent.includes('...')) {
+                    toggleBtn.textContent = originalText;
+                }
+            }
+        }
+
+        // Init dashboard
+        function init() {
+            loadUserInfo();
+            initMap();
+            fetchDeviceData();
+            
+            // Data refresh
+            refreshInterval = setInterval(fetchDeviceData, 5000);
+            
+            document.getElementById('refresh-btn').addEventListener('click', fetchDeviceData);
+            document.getElementById('logout-btn').addEventListener('click', logout);
+            document.getElementById('toggle-alarm-btn').addEventListener('click', toggleAlarm);
+        }
+
+        // Logout function
+        function logout() {
+            if (refreshInterval) {
+                clearInterval(refreshInterval);
+            }
+            window.location.href = '/';
+        }
+
+        init();
+    </script>
+</body>
+</html>
