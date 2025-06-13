@@ -119,13 +119,13 @@ Target: iOS 17+, Apple Silicon or simulator.
 
 ## Quick Start
 
-1. **Wire hardware** according to `docs/wiring.png`.  
+1. **Wire hardware**  
 2. **Configure** `firmware/ESP32_anti_theft_device/ESP32_anti_theft.ino`  
    * `WIFI_SSID`, `WIFI_PASSWORD`  
    * `TB_DEVICE_TOKEN`, `TB_SERVER`  
 3. **Flash** the ESP32‑C6.  
 4. **Verify** telemetry appears on the ThingsBoard dashboard.  
-5. **Run** the iOS app → tap **Arm**. Shake the board to trigger an alert!
+5. **Build & Run** the iOS app → tap **Arm**. Shake the board to trigger an alert!
 
 ---
 
@@ -141,6 +141,7 @@ Target: iOS 17+, Apple Silicon or simulator.
 │   └── /Antitheft/DemoApp.swift
 ├── digital_win/             
 │   ├── ESP32_anti_theft_digital_twin.py
+│   └── ESP32_anti_theft_digital_twin_spring_boot
 └── docs/                   # Diagrams & screenshots
 ```
 
@@ -154,14 +155,16 @@ Target: iOS 17+, Apple Silicon or simulator.
 
 ## Screenshots
 
-| Dashboard |
+| ThingsBoard Dashboard |
 |-----------|
-| ![Dashboard](docs/tb_dashboard.png) |
+| ![ThingsBoard Dashboard](docs/tb_dashboard.png) |
 
 | Splash screen | Disarmed | Armed | Moving |
 |-----------|------------|-----------|------------|
 | ![App](docs/app_splash_screen.png) | ![App](docs/app_disarmed.png) | ![App](docs/app_armed.png) | ![App](docs/app_moving.png) |
+| Web App |
+|-----------|
+| ![Web App](docs/web_app.png) |
 
 ---
 
-**Happy hacking!**
