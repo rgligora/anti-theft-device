@@ -27,9 +27,9 @@ class ThingsBoardAPI {
     private init() {}
 
     // MARK: – Configuration
-    private let baseURL = URL(string: "http://161.53.133.253:8080")!
-    private let deviceId = "5e6b01b0-451b-11f0-a544-db21b46190ed"
-    private let jwt = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnYWJyaWplbC5jb2Jhbm92QGZlci5ociIsInVzZXJJZCI6IjZiMjc2MTUwLTM2NGQtMTFmMC1hNTQ0LWRiMjFiNDYxOTBlZCIsInNjb3BlcyI6WyJURU5BTlRfQURNSU4iXSwic2Vzc2lvbklkIjoiZDE0N2FhM2EtMTYwYi00YTI0LTkxZDUtODlhMjc2MGQzOTEyIiwiZXhwIjoxNzQ5NTg0OTEyLCJpc3MiOiJ0aGluZ3Nib2FyZC5pbyIsImlhdCI6MTc0OTU3NTkxMiwiZW5hYmxlZCI6dHJ1ZSwiaXNQdWJsaWMiOmZhbHNlLCJ0ZW5hbnRJZCI6IjNhOThmNWQwLTM2NGQtMTFmMC1hNTQ0LWRiMjFiNDYxOTBlZCIsImN1c3RvbWVySWQiOiIxMzgxNDAwMC0xZGQyLTExYjItODA4MC04MDgwODA4MDgwODAifQ.3b65M1e87OZjkK7_mptgognGJ1kIDxiU-U9p99cQkTq_tJYJOhx5lY5wGSbNjS_P28b-zTvjI_HOOqMyV1Xi4w"
+    private let baseURL = URL(string: "<TB_IP:port>")!
+    private let deviceId = "<device ID>"
+    private let jwt = "<JWT Token>"
 
     // MARK: – Fetch Latest Telemetry
     func fetchLatest() async throws -> (location: CLLocationCoordinate2D, armed: Bool, moving: Bool) {

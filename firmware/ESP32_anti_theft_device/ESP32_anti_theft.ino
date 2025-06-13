@@ -33,15 +33,15 @@
 
 // ─── USER CONFIG ─────────────────────────────────────────────────────────────
 // 1) Wi-Fi credentials:
-const char* WIFI_SSID     = "RokoiPhone";
-const char* WIFI_PASSWORD = "nesjecamse";
+const char* WIFI_SSID     = "<WIFI_SSID>";  // Replace with your Wi-Fi SSID
+const char* WIFI_PASSWORD = "<WIFI_PASSWORD>"; // Replace with your Wi-Fi password
 
 // 2) ThingsBoard Device Access Token:
-const char* TB_DEVICE_TOKEN = "jjl0jhykAJF1miCTHxMB";
+const char* TB_DEVICE_TOKEN = "<TB_ACCESS_TOKEN>"; // Replace with your ThingsBoard device access token
 
 // 3) ThingsBoard server:
-const char* TB_SERVER = "161.53.133.253";
-const int   TB_PORT   = 1883;
+const char* TB_SERVER = "<TB_IP_OR_HOSTNAME>"; // Replace with your ThingsBoard server IP or hostname
+const int   TB_PORT   = "<TB_PORT>"; // Replace with your ThingsBoard server port (default is 1883 for MQTT)
 
 // 4) Pins:
 static const int LED_PIN    = 5;   // Red LED

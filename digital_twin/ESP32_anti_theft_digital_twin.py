@@ -6,9 +6,9 @@ import json
 import paho.mqtt.client as mqtt
 
 # ─── CONFIG ────────────────────────────────────────────────────────────────────
-TB_SERVER        = "161.53.133.253"
-TB_PORT          = 1883
-TB_DEVICE_TOKEN  = "xgRHGG2KZk18tGJqRm3l"
+TB_SERVER        = "<TB_IP_OR_HOST>"  # replace with your actual ThingsBoard server IP or hostname
+TB_PORT          = 1883                # default MQTT port for ThingsBoard"
+TB_DEVICE_TOKEN  = "<DEVICE_ACCESS_TOKEN>"  # replace with your actual token
 CLIENT_ID        = f"dtwin_{random.randint(0,9999)}"
 
 TELEMETRY_TOPIC       = "v1/devices/me/telemetry"
